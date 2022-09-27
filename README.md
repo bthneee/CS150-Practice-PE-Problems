@@ -1,2 +1,3 @@
 # PE02-Practice
- Practice problems for PE02
+ OCC CS150 C++ 1 programming
+  Practice problems for programming exams
