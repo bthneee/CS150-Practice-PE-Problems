@@ -1,11 +1,11 @@
 #include <iostream>
-#include <cmath>
 
 using namespace std;
 
 double bmiCalc(double height, double weight, int& bmiClass)
 {
   const int CONVERSION_FACTOR = 703;
+  // bmi = 703 * (weight / height^2)
   double bmi = weight / (height * height) * CONVERSION_FACTOR;
   if(bmi >= 30)
     bmiClass = 4;
