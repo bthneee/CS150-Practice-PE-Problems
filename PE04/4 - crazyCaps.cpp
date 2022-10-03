@@ -23,4 +23,6 @@ void crazyCaps(string& str)
                 str[i] = (str[i] - 32);
             }          
         }       
+    }
+
 }
