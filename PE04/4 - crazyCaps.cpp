@@ -1,21 +1,26 @@
 void crazyCaps(string& str)
 {
+    // run through each char in string
     for(size_t i = 0; i < str.size(); i++)
     {
-        if(i%2==0)
+        // if position is even
+        if(i % 2 == 0)
         {
+            // if char is uppercase
             if(str[i] >= 'A' && str[i] <= 'Z')
             {
-                str[i] = (str[i]+32);
+                // make lowercase
+                str[i] = (str[i] + 32);
             }
-    }    
-    else
-    {
-        if(str[i] >= 'a' && str[i] <= 'z')
+        }   
+        // if position is odd
+        else
         {
-           str[i] = (str[i]-32);
-         }
-                
-    }
-        
+            // if char is lowercase
+            if(str[i] >= 'a' && str[i] <= 'z')
+            {
+                // make uppercase
+                str[i] = (str[i] - 32);
+            }          
+        }       
 }
