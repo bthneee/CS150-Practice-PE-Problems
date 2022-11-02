@@ -1,0 +1,214 @@
+void starsInSector(const vector<Star>& vStars, vector<string>& names, double x, double y){
+	//looping through each index in vStars. note that the index variable is of the type
+	//size_t or unsigned int. if you use signed int (normal int), it will cause warnings which 
+	//you were having.
+	for(size_t i=0;i<vStars.size();i++){
+		//fetching char at index i
+		Star s=vStars[i];
+		//checking if x and y are in 1st quadrant (top right)
+		if(x>=0 && y>=0){
+			//checking if stars coordinates are within origin and (x,y)
+			if(s.x>=0 && s.x<=x && s.y>=0 && s.y<=y){
+				//adding star's name to names vector
+				names.push_back(s.names);
+			}
+		}
+		//checking if x and y are in 2nd quadrant (top left)
+		else if(x<=0 && y>=0){
+			// x <= s.x <= 0 and 0 <= s.y <= y
+			if(s.x>=x && s.x<=0 && s.y>=0 && s.y<=y){
+				names.push_back(s.names);
+			}
+		}
+		//checking if x and y are in 3rd quadrant (bottom left)
+		else if(x<=0 && y<=0){
+			// x <= s.x <= 0 and y <= s.y <= 0
+			if(s.x>=x && s.x<=0 && s.y>=y && s.y<=0){
+				names.push_back(s.names);
+			}
+		}
+		//checking if x and y are in 4th quadrant (bottom right)
+		else if(x>=0 && y<=0){
+			// 0 <= s.x <= x and y <= s.y <= 0
+			if(s.x>=0 && s.x<=x && s.y>=y && s.y<=0){
+				names.push_back(s.names);
+			}
+		}
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////////////////
+// helper function
+Star addStar(double x, double y, double mag, int dip, string name) {
+	Star s;
+	s.x = x; s.y = y; s.magnitude = mag;
+	s.dipper = dip; s.names = name;
+	return s;
+}
+
+vector<int> findStars(const vector<Star> &v, const string &name) {
+	vector<int> result;
+	for(int i=0 ; i<v.size() ; i++) {
+    	if (v[i].names.find(name) != string::npos) {
+    		result.push_back(v[i].dipper);
+		}
+	}
+	return result;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////
+vector<size_t> magnitudeBetween(vector<Star> vStars, double upper, double lower){
+  vector<size_t> indexes;
+  //Loop through all the elements in the vStars vector
+  for (int i = 0; i < vStars.size(); i++)
+  {
+    //Check if magnitude is between upper & lower bound, if true add the index of the star to the vector indexes
+    if (vStars[i].magnitude > lower && vStars[i].magnitude < upper )
+      indexes.push_back(i);
+  }
+  return indexes;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////
+double starsBetween(const vector<Stars> &vStars, vector<string> &names, double low, double high){
+  double sum = 0;
+  names.clear();
+  for(int i = 0; i < vStars.size(); i++)
+  {
+    if(vStars[i].magnitude > low && vStars[i].magnitude < high)
+    {
+      sum += vStars[i].magnitude;
+      names.push_back(vStars[i].names);
+     }
+  }
+  if(names.size() == 0) return -1;
+  else return sum / names.size();
+}
+////////////////////////////////////////////////////////////////////////////////////////////////
+vector<Stars> longestHop(const Vector<Stars> &vStars){
+  vector<Stars> s;
+  double longest = 0;
+  //put the first and second star to begin with
+  s.push_back(vStars[0]);
+  s.push_back(vStars[1]);
+  for(int i = 2; i < vStars.size(); i++)
+  {
+    double x1 = vStars[i-1].x;
+    double y1 = vStars[i-1].y;
+    double x2 = vStars[i].x;
+    double y2 = vStars[i].y;
+    double dx = x2 - x1, dy = y2 - y1;
+    double d = sqrt(dx * dx + dy * dy);
+    if(d > longest)
+    {
+      s[0] = vStars[i - 1];
+      s[1] = vStars[i];
+      longest = d;
+    }
+  }
+  return s;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////
+double roundTrip(const Vector<Stars> &vStars){
+  double sum = 0;
+  for(int i = 1; i < vStars.size(); i++)
+  {
+    double x1 = vStars[i - 1].x;
+    double y1 = vStars[i - 1].y;
+    double x2 = vStars[i].x;
+    double y2 = vStars[i].y;
+    double dx = x2 - x1, dy = y2 - y1;
+    double d = sqrt(dx * dx + dy * dy);
+    sum += d;
+  }
+  //distance between last and first star
+  double x1 = vStars[0].x;
+  double y1 = vStars[0].y;
+  double x2 = vStars[vStars.size() - 1].x;
+  double y2 = vStars[vStars.size() - 1].y;
+  double dx = x2 - x1, dy = y2 - y1;
+  double d = sqrt(dx * dx + dy * dy);
+  sum += d;
+  return sum;
+}
+//////////////////////////////////////////////////////////////////////////////////////////////
+vector<Star> closestDistance(vector<Star> vStars){
+  Star star1;
+  Star star2;
+  bool firstEntry = true;//representing first pair of stars
+  double distance = 0;//distance between closest stars (current)
+  //looping through all pair of stars
+  for(int i = 1;i < vStars.size(); i++)
+  {
+    if(firstEntry)
+    {
+      //first pair, updating the variables
+      star1 = vStars[i - 1];
+      star2 = vStars[i];
+      //finding distance, i am not considering z axis as the Star struct has only
+      //x, y axes
+      distance = sqrt(pow(star2.x - star1.x, 2) + pow(star2.y - star1.y, 2) );
+      firstEntry = false;
+    }
+    else
+    {
+      //subsequent pair
+      Star tmp1 = vStars[i - 1];
+      Star tmp2 = vStars[i];
+      //finding the distance between current pair of stars
+      double tmpDistance = sqrt(pow(tmp2.x - tmp1.x, 2) + pow(tmp2.y - tmp1.y, 2) );
+      //checking if it is smaller than current distance
+      if(tmpDistance < distance)
+      {
+        //updating the variables
+        distance = tmpDistance;
+        star1 = tmp1;
+        star2 = tmp2;
+      }
+    }
+  }
+  //defining the vector and pushing the two closest stars pair
+  vector<Star> closest;
+  closest.push_back(star1);
+  closest.push_back(star2);
+  return closest;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+double bestMileage(vector <Car>vCars, vector <string> &vMileage){
+  double total = 0;
+  for(int x = 0; x < vCars.size(); x++)
+  {
+    total += vCars.at(x).mpg;
+    // Inserts the car manufacturer name concatenated with semicolon and model
+    vMileage.push_back(vCars.at(x).mfg + "; " + vCars.at(x).model);
+  }
+  return total / vCars.size();
+}
+/////////////////////////////////////////////////////////////////////////////////////
+vector<string> bestValue(vector<Camera> v){
+  vector<string> output;
+  // compute best value for each manufacturer
+  int i = 0;
+  string current_m = v[0].manufacturer;
+  // best value till now
+  float best_value = v[0].resolution / v[0].price;
+  int best = 0;
+  while (i <= v.size())
+  {
+    // if current manufacturer is not same, or end of vector
+    if (v[i].manufacturer != current_m || i == v.size())
+    {
+      ostringstream out;
+      // create string in given format
+      out << v[best].manufacturer << ":" << v[best].model << " " << v[best].resolution << ":$" << v[best].price;
+      // add best to output vector
+      output.push_back(out.str());
+    }
+    else
+    {
+      // compute current best value
+      float current_b = v[i].resolution / v[i].price;
+      // if current best is > best
+      if (current_b > best_value)
+        best = i;
+    }
+  }
+  return output;
+}
